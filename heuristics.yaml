@@ -12,11 +12,10 @@ model:
     thresholds:
       min_dependents: 1
       min_contributors: 1
-    decay_lambda: 0.5  # Optional, for time decay if data supports
 data:
   projects_file: devtooling_project_metadata.csv
-  contributor_file: devtooling_developer_graph.csv  
+  contributor_file: devtooling_raw_metrics.json  
   onchain_metrics_file: devtooling_onchain_metadata.csv
-  dependency_file: devtooling_raw_metrics.json
+  dependency_file: devtooling_developer_graph.csv
 output:
   rankings_file: heuristics_rankings.csv
