@@ -4,12 +4,14 @@ import json
 import os
 
 # Define directory path
-directory_path = r'C:\Users\USER\Desktop\Onchain Labs\Retro Funding'
+directory_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+
 
 # Load YAML configuration
-yaml_path = os.path.join(directory_path, 'heuristics.yaml')
+yaml_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'weight', 'heuristics.yaml')
 with open(yaml_path, 'r', encoding='utf-8') as file:
     config = yaml.safe_load(file)
+
 
 # Extract weights, thresholds, and file names
 weights = config['model']['parameters']['weights']
@@ -45,7 +47,7 @@ dependency_metrics = event_count.merge(commit_volume, on='project_id', how='oute
                                 .fillna(0)
 
 # Merge all data
-merged_df = projects_df[['project_id', 'star_count', 'fork_count']].merge(
+merged_df = projects_df[['project_id', 'display_name', 'star_count', 'fork_count']].merge(
     contributor_df[['project_id', 'developer_connection_count']],
     on='project_id',
     how='left'
@@ -104,6 +106,9 @@ eligible_df.loc[:, 'score'] = sum(eligible_df[f'normalized_{metric}'].fillna(0) 
 # Rank projects
 ranked_df = eligible_df.sort_values(by='score', ascending=False)
 
-output_path = os.path.join(directory_path, config['output']['rankings_file'])
+output_directory = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'outputs')
+output_path = os.path.join(output_directory, config['output']['rankings_file'])
+os.makedirs(output_directory, exist_ok=True)
+
 ranked_df.to_csv(output_path, index=False)
 print(f"Ranking complete! Check '{output_path}' for results.")
